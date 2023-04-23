@@ -5,6 +5,11 @@
     "course": "https://gitee.com/heizicao/my-icon"
   },
   {
+    "name": "Vertex",
+    "sort": "docker",
+    "course": "https://wiki.vertex.icu/"
+  },
+  {
     "name": "filebrowser",
     "sort": "docker",
     "course": "https://mp.weixin.qq.com/s?__biz=MzI2MjkzMDk3OA==&mid=2247485659&idx=1&sn=f7fec6f2c622045e502c065ac93b0d8d&chksm=ea42df96dd355680cb4b84e436beeb644be585e70fb41ba88efad08cf0f390873b1c562a54b4&token=1059416760&lang=zh_CN#rd"
