@@ -10,6 +10,11 @@
     "course": "https://wiki.vertex.icu/"
   },
   {
+    "name": "wireguard",
+    "sort": "docker",
+    "course": "https://www.wireguard.com/install/"
+  },
+  {
     "name": "nastool",
     "sort": "docker",
     "course": "https://github.com/NAStool/nas-tools"
