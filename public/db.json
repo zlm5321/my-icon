@@ -5,6 +5,11 @@
     "course": "https://gitee.com/heizicao/my-icon"
   },
   {
+    "name": "moviepilot",
+    "sort": "docker",
+    "course": "https://github.com/jxxghp/MoviePilot"
+  },
+  {
     "name": "vertex",
     "sort": "docker",
     "course": "https://wiki.vertex.icu/"
