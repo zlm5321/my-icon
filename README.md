@@ -1,5 +1,5 @@
 # My Icon
-![输入图片说明](public/screenshot.jpg)
+![输入图片说明](my-icon/public/screenshot.jpg)
 
 #### 介绍
 提供在线图标链接，用于个人 NAS 设备显示使用，禁止用于商业用途
