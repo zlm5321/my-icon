@@ -1,0 +1,9 @@
+services:
+  myicon:
+    image: heizicao/myicon
+    container_name: myicon
+    ports:
+      - 3000:3000
+    volumes:
+      - /mnt/user/appdata/myicon:/app/public/icon
+    restart: unless-stopped

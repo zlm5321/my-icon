@@ -7,9 +7,6 @@ WORKDIR /app
 # 复制文件
 COPY . /app
 
-#设置挂载点
-COPY /public/icon /icon
-VOLUME ["/icon"]
 
 # 安装项目依赖
 RUN npm install

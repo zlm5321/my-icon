@@ -373,6 +373,8 @@ export default defineComponent({
       cardWidth();
       //控制弹窗宽度
       dialogWidth();
+      //复制图标
+      await axios.post(data.expressUrl + "/copy");
       //读取文件夹
       data.folderData = await readFolder();
       //读取文件夹图片
