@@ -3,7 +3,7 @@
   "webDesc1": "极简图标库，提供在线图标链接，支持文件管理功能",
   "webDesc2": "开源项目，专为个人 NAS 设备打造",
   "creator": "© By David | 2025.01.26",
-  "bgType": "localImg",
+  "bgType": "iframe",
   "bgImgPath": "/configData/background-image.jpg",
   "bgImgUrl": "https://t.mwm.moe/fj",
   "bgBlur": 0,
