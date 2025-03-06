@@ -1,5 +1,5 @@
 # 使用Node.js镜像作为基础
-FROM node
+FROM node:21.6.2-slim
 
 # 设置工作目录
 WORKDIR /app

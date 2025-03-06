@@ -2,7 +2,7 @@
 ![输入图片说明](my-icon/public/screenshot.png)
 
 #### 介绍
-提供在线图标链接，用于个人 NAS 设备显示使用，禁止用于商业用途
+极简图标库，提供在线图标链接，支持文件管理功能
 
 #### 使用
 可以创建分类文件夹，上传图标，点击相应图标即可获取URL
@@ -11,11 +11,16 @@
 - 分类文件夹：索引 + “_” + 文件夹名称
 - 文件夹图标：Cover.png
 
+#### 计划改进
+- 切片上传文件
+- 深色主题切换
+- 更多个性化设置
+- 拉取图标库
 
 #### 项目开发
 文件介绍
 - my-icon：开发源代码
-- express：用于后期打包
+- express：用于镜像打包
 
 运行项目
 - npm run server
@@ -35,14 +40,14 @@
 
 
 构建镜像
-- 先拉取 node 下来：docker pull node:latest
-- 创建构建的文件夹中：cd /mnt/user/appdata/express
+- 先拉取 node 下来：docker pull node:21.6.2-slim
+- 来到构建的目录：cd /mnt/user/appdata/express
 - 制作打包：docker build -t myicon .
-- 创建容器：docker run -d -p 3000:3000 -v /mnt/user/appdata/myicon:/app/public/icon myicon
+- 创建容器：docker run -d --name myicon -p 3000:3000 -v /mnt/user/appdata/myicon:/app/public/configData heizicao/myicon:latest
 
 导出镜像
 - docker ps -a
-- docker export 4cffb2633446 > /mnt/user/appdata/myicon.tar
+- docker export 容器ID > /mnt/user/appdata/myicon.tar
 
 上传 Dockerhub
 - https://www.cnblogs.com/JerryMouseLi/p/16040807.html

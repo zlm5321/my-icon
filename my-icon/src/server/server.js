@@ -1,6 +1,8 @@
 const express = require("express");
 const fs = require("fs");
 const app = express();
+const router = app;
+
 //跨域
 app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -14,13 +16,19 @@ app.all("*", function (req, res, next) {
 const bodyParser = require("body-parser");
 app.use(bodyParser.json({ limit: "16mb" }));
 
+//运行端口
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log("服务器运行在端口：" + PORT);
+});
+
 //操作目录
 let configPath = "./public";
 
-//复制图标文件夹
-app.post("/copy", (req, res) => {
-  let targetPath = "./public/icon";
-  let sourcePath = "./public/backups";
+//复制文件夹
+router.post("/copy", (req, res) => {
+  let targetPath = configPath + req.body.targetPath;
+  let sourcePath = configPath + req.body.sourcePath;
   //创建文件夹
   fs.mkdir(targetPath, { recursive: true }, (err) => {
     if (err) {
@@ -64,8 +72,46 @@ app.post("/copy", (req, res) => {
   });
 });
 
+//读取文件
+router.post("/readFile", (req, res) => {
+  let path = req.body.path;
+  fs.readFile(configPath + path, "utf8", (err, data) => {
+    if (err) {
+      res.send({
+        code: 500,
+        msg: "错误：" + err,
+      });
+    } else {
+      res.send({
+        code: 200,
+        data: JSON.parse(data),
+        msg: "读取成功",
+      });
+    }
+  });
+});
+
+//修改文件
+router.post("/writeFile", (req, res) => {
+  let path = req.body.path;
+  let str = req.body.str;
+  fs.writeFile(configPath + path, str, (err) => {
+    if (err) {
+      res.send({
+        code: 500,
+        msg: "写入失败：" + err,
+      });
+    } else {
+      res.send({
+        code: 200,
+        msg: "写入成功",
+      });
+    }
+  });
+});
+
 //判断目录、文件是否存在
-app.post("/access", (req, res) => {
+router.post("/access", (req, res) => {
   let path = req.body.path;
   fs.access(configPath + path, (err) => {
     if (err) {
@@ -83,7 +129,7 @@ app.post("/access", (req, res) => {
 });
 
 //创建文件夹
-app.post("/mkdir", (req, res) => {
+router.post("/mkdir", (req, res) => {
   let path = req.body.path;
   fs.mkdir(configPath + path, (err) => {
     if (err) {
@@ -101,7 +147,7 @@ app.post("/mkdir", (req, res) => {
 });
 
 //修改名称
-app.post("/rename", (req, res) => {
+router.post("/rename", (req, res) => {
   let oldPath = configPath + req.body.oldPath;
   let newPath = configPath + req.body.newPath;
   fs.rename(oldPath, newPath, (err) => {
@@ -120,56 +166,65 @@ app.post("/rename", (req, res) => {
 });
 
 //删除文件夹
-app.post("/rmdir", (req, res) => {
-  let message = "";
-  let path = req.body.path;
-  fs.readdir(configPath + path, (err, files) => {
-    if (err) {
-      message = err.message;
-      return;
-    }
-    // 2.删除目录中的内容  删除b1.txt
-    // unlink 不能用于删除文件夹，rm 可以删除文件和文件夹
-    // 当删除文件、目录时，rm 和 unlink 是完全一样的。
-    files.forEach((file) => {
-      fs.unlink(configPath + path + "/" + file, (err) => {
-        if (err) {
-          message = err.message;
-          return;
-        }
-        //console.log(file + "已被删除");
-      });
+router.post("/rmdir", async (req, res) => {
+  let path = configPath + req.body.path;
+  try {
+    deleteFolder(path);
+    res.send({
+      code: 200,
+      message: "删除成功",
     });
-    // 3.删除目录  删除b文件
-    fs.rmdir(configPath + path, (err) => {
-      if (err) {
-        message = err.message;
-        return;
+  } catch (err) {
+    res.send({
+      code: 500,
+      message: err.message,
+    });
+  }
+});
+
+function deleteFolder(path) {
+  var files = [];
+  if (fs.existsSync(path)) {
+    files = fs.readdirSync(path);
+    files.forEach(function (file, index) {
+      var curPath = path + "/" + file;
+      if (fs.statSync(curPath).isDirectory()) {
+        // 删除文件夹
+        deleteFolder(curPath);
+      } else {
+        // 删除文件
+        fs.unlinkSync(curPath);
       }
-      //console.log(path + "目录已被删除");
     });
-    if (message == "") {
+    fs.rmdirSync(path);
+  }
+}
+
+router.post("/rmdir2", async (req, res) => {
+  let path = configPath + req.body.path;
+  fs.rmdir(path, { recursive: true }, (err) => {
+    if (err) {
       res.send({
-        code: 200,
-        message: "删除成功",
+        code: 500,
+        message: err.message,
       });
     } else {
       res.send({
-        code: 500,
-        message: message,
+        code: 200,
+        message: "删除成功",
       });
     }
   });
 });
 
 //删除文件
-app.post("/unlink", (req, res) => {
-  let path = req.body.icon;
+router.post("/unlink", (req, res) => {
+  let path = req.body.path;
   fs.unlink(configPath + path, (err) => {
     if (err) {
       res.send({
         code: 500,
-        msg: "不能读取文件",
+        msg: "删除失败",
       });
     } else {
       res.send({
@@ -180,14 +235,14 @@ app.post("/unlink", (req, res) => {
   });
 });
 
-//读取文件
-app.post("/readdir", (req, res) => {
+//读取文件夹
+router.post("/readdir", (req, res) => {
   let path = req.body.path;
   fs.readdir(configPath + path, (err, files) => {
     if (err) {
       res.send({
         code: 500,
-        msg: "不能读取文件",
+        msg: "不能读取文件夹",
       });
     } else {
       res.send({
@@ -200,18 +255,20 @@ app.post("/readdir", (req, res) => {
 });
 
 //上传图片
-app.post("/upload", (req, res) => {
+router.post("/upload", (req, res) => {
   let filePath = configPath + req.body.path + "/" + req.body.name;
-  let dataBuffer = Buffer.from(req.body.base64Data, "base64");
-  fs.writeFileSync(filePath, dataBuffer);
-  res.send({
-    code: 200,
-    msg: "文件创建并写入成功",
+  let dataBuffer = Buffer.from(req.body.str, "base64");
+  fs.writeFile(filePath, dataBuffer, (err) => {
+    if (err) {
+      res.send({
+        code: 500,
+        msg: "上传失败：" + err,
+      });
+    } else {
+      res.send({
+        code: 200,
+        msg: "文件创建并写入成功",
+      });
+    }
   });
-});
-
-//运行端口
-const PORT = 4000;
-app.listen(PORT, () => {
-  console.log("务器运行在端口：" + PORT);
 });
